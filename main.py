@@ -2,7 +2,7 @@ import requests
 import csv
 from time import sleep
 
-# Настройки
+
 TOKEN = "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"
 SEARCH_QUERY = "python"
 MIN_FOLLOWERS = 1000
@@ -16,7 +16,6 @@ headers = {
 }
 
 def get_users_from_github(page=1, per_page=100):
-    """Получает список пользователей через GitHub API"""
     api_url = f"https://api.github.com/search/users?q={SEARCH_QUERY}&type=users&page={page}&per_page={per_page}"
     try:
         response = requests.get(api_url, headers=headers)
@@ -27,7 +26,6 @@ def get_users_from_github(page=1, per_page=100):
         return []
 
 def get_user_followers(username):
-    """Получает только количество подписчиков пользователя"""
     url = f"https://api.github.com/users/{username}"
     try:
         response = requests.get(url, headers=headers)
@@ -36,7 +34,7 @@ def get_user_followers(username):
         followers = user_data.get('followers', 0)
         if followers >= MIN_FOLLOWERS:
             return {
-                'login': user_data.get('login', ''),  # Изменено с 'username' на 'login'
+                'login': user_data.get('login', ''), 
                 'profile_url': user_data.get('html_url', ''),
                 'followers': followers
             }
@@ -46,7 +44,7 @@ def get_user_followers(username):
         return None
 
 def save_to_csv(users_data, filename):
-    """Сохраняет данные в CSV"""
+
     if not users_data:
         print("Нет данных для сохранения")
         return
@@ -61,7 +59,7 @@ def save_to_csv(users_data, filename):
 def main():
     print(f"Начинаем парсинг пользователей по запросу: '{SEARCH_QUERY}'")
     
-    # Собираем пользователей
+
     all_users = []
     page = 1
     
@@ -81,7 +79,7 @@ def main():
         page += 1
         sleep(DELAY)
 
-    # Получаем информацию о подписчиках
+
     users_data = []
     for i, user in enumerate(all_users, 1):
         user_info = get_user_followers(user['login'])
@@ -90,7 +88,7 @@ def main():
         print(f"Обработано {i}/{len(all_users)} пользователей", end='\r')
         sleep(DELAY)
 
-    # Сохраняем в CSV
+
     save_to_csv(users_data, OUTPUT_FILE)
 
 if __name__ == "__main__":
